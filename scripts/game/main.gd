@@ -1,11 +1,13 @@
 extends Node2D
-## STEP 2 composition root: arena spawns and HUD, not AI or combat rules.
+## STEP 3 composition root: arena spawns and HUD. Combat/skills are separate components.
 
 const INPUT_BINDINGS: Dictionary = {
     "move_left": [KEY_A, KEY_LEFT],
     "move_right": [KEY_D, KEY_RIGHT],
     "move_up": [KEY_W, KEY_UP],
     "move_down": [KEY_S, KEY_DOWN],
+    "skill_cone": [KEY_Q],
+    "skill_bolt": [KEY_E],
 }
 const SPAWN_CELL: Vector2i = Vector2i(10, 10)
 const TRAINING_DUMMY_SCENE: PackedScene = preload("res://scenes/enemies/training_dummy.tscn")
@@ -26,8 +28,12 @@ var enemies_defeated: int = 0
 @onready var world: TileMapLayer = $World
 @onready var player: CharacterBody2D = $Player
 @onready var player_health: HealthComponent = $Player/HealthComponent
+@onready var player_mana: ManaComponent = $Player/ManaComponent
+@onready var player_skills: Node2D = $Player/Skills
 @onready var status_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/Status
 @onready var player_health_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/PlayerHealth
+@onready var player_mana_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/PlayerMana
+@onready var skill_status_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/SkillStatus
 
 
 func _ready() -> void:
@@ -35,10 +41,20 @@ func _ready() -> void:
     player.global_position = world.to_global(world.map_to_local(SPAWN_CELL))
     player_health.health_changed.connect(_on_player_health_changed)
     player_health.died.connect(_on_player_died)
+    player_mana.mana_changed.connect(_on_player_mana_changed)
     _spawn_training_targets()
     _spawn_chasers()
     _update_status()
     _on_player_health_changed(player_health.current_health, player_health.max_health)
+    _on_player_mana_changed(player_mana.current_mana, player_mana.max_mana)
+
+    
+func _process(_delta: float) -> void:
+    var q_cd: float = float(player_skills.get("cone_cooldown_remaining"))
+    var e_cd: float = float(player_skills.get("bolt_cooldown_remaining"))
+    var q_text: String = "Ready" if q_cd <= 0.0 else "%.1fs" % q_cd
+    var e_text: String = "Ready" if e_cd <= 0.0 else "%.1fs" % e_cd
+    skill_status_label.text = "Q Cone (5 MP): %s  |  E Bolt (7 MP): %s" % [q_text, e_text]
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -89,6 +105,10 @@ func _on_player_health_changed(current: int, maximum: int) -> void:
 
 func _on_player_died() -> void:
     player_health_label.text = "Player HP: 0 — defeated (restart F5)"
+
+
+func _on_player_mana_changed(current: int, maximum: int) -> void:
+    player_mana_label.text = "Player MP: %d / %d  (+1/s)" % [current, maximum]
 
 
 func _register_move_inputs() -> void:
