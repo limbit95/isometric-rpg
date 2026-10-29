@@ -1,0 +1,52 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/chaser_enemy.gd" id="1_ai"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
+[ext_resource type="Texture2D" path="res://assets/characters/player_placeholder.png" id="3_sprite"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 9.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hurtbox"]
+radius = 12.0
+
+[node name="ChaserEnemy" type="CharacterBody2D" groups=["enemies"]]
+collision_layer = 2
+collision_mask = 1
+script = ExtResource("1_ai")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_body")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("3_sprite")
+texture_filter = 1
+modulate = Color(0.98, 0.58, 0.16, 1)
+offset = Vector2(0, -18)
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("CircleShape2D_hurtbox")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 8
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+offset_left = -24.0
+offset_top = -48.0
+offset_right = 24.0
+offset_bottom = -39.0
+max_value = 8.0
+value = 8.0
+show_percentage = false
+mouse_filter = 2
+
+[node name="Warning" type="Polygon2D" parent="."]
+visible = false
+color = Color(1, 0.13, 0.1, 0.45)
+polygon = PackedVector2Array(-22, 8, 22, 8, 18, 15, -18, 15)
+z_index = -1
