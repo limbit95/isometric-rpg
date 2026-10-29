@@ -79,7 +79,7 @@ func _physics_process(delta: float) -> void:
                 elif _cooldown_remaining <= 0.0:
                     _start_windup()
             State.RETURN:
-                _update_return(delta)
+                pass
             State.DEAD:
                 pass
 
