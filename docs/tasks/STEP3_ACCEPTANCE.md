@@ -20,7 +20,7 @@ Status: development branch; PR and play test required before merge.
 1. STEP0, STEP1 and STEP2 regression tests remain green.
 2. New STEP3 Python contract tests pass.
 3. Godot headless runtime verifies cone multi-target damage, projectile single-target damage, travel cap, independent cooldowns, mana spend/regeneration, dead-player rejection.
-4. Manual Godot graphical play: Q damages dummies in front, E projectile hits one target, HP/MP bars and cooldown text react, enemies still chase/attack.
+4. Manual Godot graphical play: Q damages dummies in front, E projectile hits one target, HP/MP labels and cooldown text react, enemies still chase/attack.
 5. Play test and explicit user approval required before any main merge.
 
 ## Limitations
