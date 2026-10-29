@@ -6,5 +6,6 @@ GODOT_BIN="${GODOT_BIN:-godot}"
 python3 -m unittest discover -s "$ROOT/tests" -p 'test_*.py' -v
 "$GODOT_BIN" --headless --path "$ROOT" --import --quit
 "$GODOT_BIN" --headless --path "$ROOT" --script res://tests/smoke_runner.gd
+"$GODOT_BIN" --headless --path "$ROOT" --script res://tests/combat_smoke_runner.gd
 
-echo 'STEP0_VERIFICATION_OK'
+echo 'STEP1_VERIFICATION_OK'
