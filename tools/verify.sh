@@ -12,4 +12,6 @@ python3 -m unittest discover -s "$ROOT/tests" -p 'test_*.py' -v
 
 "$GODOT_BIN" --headless --path "$ROOT" --script res://tests/skills_smoke_runner.gd
 
-echo 'STEP3_VERIFICATION_OK'
+"$GODOT_BIN" --headless --path "$ROOT" --script res://tests/progression_inventory_smoke_runner.gd
+
+echo 'STEP4_VERIFICATION_OK'
