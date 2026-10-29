@@ -1,4 +1,4 @@
-name: Godot STEP0 verification
+name: Godot verification (STEP0 + STEP1)
 
 on:
   push:
