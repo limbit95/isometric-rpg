@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/world/isometric_world.gd" id="2_world"]
@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="6_health"]
 [ext_resource type="Script" path="res://scripts/components/mana_component.gd" id="7_mana"]
 [ext_resource type="Script" path="res://scripts/player/player_skills.gd" id="8_skills"]
+[ext_resource type="Script" path="res://scripts/components/progression_component.gd" id="9_progress"]
+[ext_resource type="Script" path="res://scripts/components/inventory_component.gd" id="10_inventory"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -46,6 +48,12 @@ max_mana = 20
 [node name="Skills" type="Node2D" parent="Player"]
 script = ExtResource("8_skills")
 
+[node name="ProgressionComponent" type="Node" parent="Player"]
+script = ExtResource("9_progress")
+
+[node name="InventoryComponent" type="Node" parent="Player"]
+script = ExtResource("10_inventory")
+
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(1.75, 1.75)
 position_smoothing_enabled = true
@@ -56,8 +64,8 @@ position_smoothing_speed = 6.0
 [node name="PanelContainer" type="PanelContainer" parent="HUD"]
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 530.0
-offset_bottom = 182.0
+offset_right = 760.0
+offset_bottom = 264.0
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD/PanelContainer"]
 theme_override_constants/margin_left = 12
@@ -68,10 +76,10 @@ theme_override_constants/margin_bottom = 9
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/PanelContainer/MarginContainer"]
 
 [node name="Title" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
-text = "ISOMETRIC RPG  |  STEP 3"
+text = "ISOMETRIC RPG  |  STEP 4"
 
 [node name="Help" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
-text = "WASD: Move  |  LMB: Attack  |  Q: Cone  |  E: Bolt  |  Esc: Exit"
+text = "WASD: Move  |  LMB: Attack  |  Q/E: Skills  |  1/2: Equip  |  Esc: Exit"
 
 [node name="Status" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
 text = "Dummies: 0 / 3 | Enemies: 0 / 2"
@@ -84,3 +92,12 @@ text = "Player MP: 20 / 20"
 
 [node name="SkillStatus" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
 text = "Q Cone (5 MP): Ready  |  E Bolt (7 MP): Ready"
+
+[node name="Progression" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
+text = "Level 1  |  XP 0 / 10"
+
+[node name="Inventory" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
+text = "Bag: (empty)"
+
+[node name="Equipment" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
+text = "Equipped: - / -  |  1: Weapon, 2: Charm"
