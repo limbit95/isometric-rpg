@@ -11,7 +11,7 @@ const INPUT_BINDINGS: Dictionary = {
 const SPAWN_CELL: Vector2i = Vector2i(10, 10)
 const TRAINING_DUMMY_SCENE: PackedScene = preload("res://scenes/enemies/training_dummy.tscn")
 const DUMMY_CELLS: Array[Vector2i] = [
-    Vector2i(12, 10),
+    Vector2i(11, 10),
     Vector2i(14, 12),
     Vector2i(8, 13),
 ]
