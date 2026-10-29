@@ -16,4 +16,7 @@ if ($LASTEXITCODE -ne 0) { throw "STEP0 smoke test failed ($LASTEXITCODE)" }
 & $Godot --headless --path $ProjectRoot --script res://tests/combat_smoke_runner.gd
 if ($LASTEXITCODE -ne 0) { throw "STEP1 combat smoke test failed ($LASTEXITCODE)" }
 
-Write-Host "STEP1_VERIFICATION_OK"
+& $Godot --headless --path $ProjectRoot --script res://tests/enemy_ai_smoke_runner.gd
+if ($LASTEXITCODE -ne 0) { throw "STEP2 AI smoke test failed ($LASTEXITCODE)" }
+
+Write-Host "STEP2_VERIFICATION_OK"

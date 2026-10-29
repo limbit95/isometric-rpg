@@ -1,6 +1,5 @@
 extends Node2D
-## STEP 1 composition root: input bindings, spawns, and training HUD.
-## Combat resolution belongs to Player/Attack and HealthComponent.
+## STEP 2 composition root: arena spawns and HUD, not AI or combat rules.
 
 const INPUT_BINDINGS: Dictionary = {
     "move_left": [KEY_A, KEY_LEFT],
@@ -10,24 +9,36 @@ const INPUT_BINDINGS: Dictionary = {
 }
 const SPAWN_CELL: Vector2i = Vector2i(10, 10)
 const TRAINING_DUMMY_SCENE: PackedScene = preload("res://scenes/enemies/training_dummy.tscn")
+const CHASER_SCENE: PackedScene = preload("res://scenes/enemies/chaser_enemy.tscn")
 const DUMMY_CELLS: Array[Vector2i] = [
     Vector2i(11, 10),
     Vector2i(14, 12),
     Vector2i(8, 13),
 ]
+const CHASER_CELLS: Array[Vector2i] = [
+    Vector2i(17, 3),
+    Vector2i(3, 17),
+]
 
 var targets_defeated: int = 0
+var enemies_defeated: int = 0
 
 @onready var world: TileMapLayer = $World
 @onready var player: CharacterBody2D = $Player
+@onready var player_health: HealthComponent = $Player/HealthComponent
 @onready var status_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/Status
+@onready var player_health_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/PlayerHealth
 
 
 func _ready() -> void:
     _register_move_inputs()
     player.global_position = world.to_global(world.map_to_local(SPAWN_CELL))
+    player_health.health_changed.connect(_on_player_health_changed)
+    player_health.died.connect(_on_player_died)
     _spawn_training_targets()
+    _spawn_chasers()
     _update_status()
+    _on_player_health_changed(player_health.current_health, player_health.max_health)
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
@@ -45,13 +56,39 @@ func _spawn_training_targets() -> void:
         dummy.connect("defeated", _on_target_defeated)
 
 
+func _spawn_chasers() -> void:
+    for index: int in range(CHASER_CELLS.size()):
+        var enemy: CharacterBody2D = CHASER_SCENE.instantiate() as CharacterBody2D
+        enemy.name = "ChaserEnemy%02d" % (index + 1)
+        add_child(enemy)
+        var spawn_point: Vector2 = world.to_global(world.map_to_local(CHASER_CELLS[index]))
+        enemy.global_position = spawn_point
+        enemy.call("set_home_position", spawn_point)
+        enemy.connect("defeated", _on_enemy_defeated)
+
+
 func _on_target_defeated() -> void:
     targets_defeated += 1
     _update_status()
 
 
+func _on_enemy_defeated() -> void:
+    enemies_defeated += 1
+    _update_status()
+
+
 func _update_status() -> void:
-    status_label.text = "Training targets defeated: %d / %d" % [targets_defeated, DUMMY_CELLS.size()]
+    status_label.text = "Dummies: %d / %d  |  Enemies: %d / %d" % [
+        targets_defeated, DUMMY_CELLS.size(), enemies_defeated, CHASER_CELLS.size()
+    ]
+
+
+func _on_player_health_changed(current: int, maximum: int) -> void:
+    player_health_label.text = "Player HP: %d / %d" % [current, maximum]
+
+
+func _on_player_died() -> void:
+    player_health_label.text = "Player HP: 0 — defeated (restart F5)"
 
 
 func _register_move_inputs() -> void:

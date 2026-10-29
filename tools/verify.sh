@@ -8,4 +8,6 @@ python3 -m unittest discover -s "$ROOT/tests" -p 'test_*.py' -v
 "$GODOT_BIN" --headless --path "$ROOT" --script res://tests/smoke_runner.gd
 "$GODOT_BIN" --headless --path "$ROOT" --script res://tests/combat_smoke_runner.gd
 
-echo 'STEP1_VERIFICATION_OK'
+"$GODOT_BIN" --headless --path "$ROOT" --script res://tests/enemy_ai_smoke_runner.gd
+
+echo 'STEP2_VERIFICATION_OK'

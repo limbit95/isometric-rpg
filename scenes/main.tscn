@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/world/isometric_world.gd" id="2_world"]
 [ext_resource type="Script" path="res://scripts/player/player_controller.gd" id="3_player"]
 [ext_resource type="Texture2D" path="res://assets/characters/player_placeholder.png" id="4_texture"]
 [ext_resource type="Script" path="res://scripts/player/player_attack.gd" id="5_attack"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="6_health"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -32,6 +33,10 @@ offset = Vector2(0, -18)
 [node name="Attack" type="Node2D" parent="Player"]
 script = ExtResource("5_attack")
 
+[node name="HealthComponent" type="Node" parent="Player"]
+script = ExtResource("6_health")
+max_health = 12
+
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(1.75, 1.75)
 position_smoothing_enabled = true
@@ -42,8 +47,8 @@ position_smoothing_speed = 6.0
 [node name="PanelContainer" type="PanelContainer" parent="HUD"]
 offset_left = 20.0
 offset_top = 20.0
-offset_right = 512.0
-offset_bottom = 106.0
+offset_right = 530.0
+offset_bottom = 132.0
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD/PanelContainer"]
 theme_override_constants/margin_left = 12
@@ -54,10 +59,13 @@ theme_override_constants/margin_bottom = 9
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/PanelContainer/MarginContainer"]
 
 [node name="Title" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
-text = "ISOMETRIC RPG  |  STEP 1"
+text = "ISOMETRIC RPG  |  STEP 2"
 
 [node name="Help" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
 text = "WASD / arrows: Move  |  Left click: Attack  |  Esc: Exit"
 
 [node name="Status" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
-text = "Training targets defeated: 0 / 3"
+text = "Dummies: 0 / 3 | Enemies: 0 / 2"
+
+[node name="PlayerHealth" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
+text = "Player HP: 12 / 12"
