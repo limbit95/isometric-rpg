@@ -1,61 +1,42 @@
 # Isometric RPG — Godot 4.7.2
 
-A standalone **2D isometric action RPG prototype** using Godot 4.7.2 Standard + typed GDScript. This is a new independent repository; no Unreal or other game repository is touched.
+Standalone 2D isometric action RPG prototype. Repository: `limbit95/isometric-rpg`. All other projects remain untouched.
 
-## STEP 0 (committed to main)
+## Progress
 
-- 64×32 isometric TileMapLayer / 20×20 checkerboard arena.
-- WASD or arrow-key movement, placeholder sprite, Camera2D follow.
-- Python and Godot headless smoke tests.
+- **STEP 0 (main):** isometric 64×32 TileMapLayer (20×20 cells), WASD movement, Camera2D and automated smoke tests.
+- **STEP 1 (main, PR #1):** left-click directional melee, 2 damage, 0.4s cooldown, three training dummies, reusable HealthComponent.
+- **STEP 2 (main, PR #2):** two orange enemies chase/attack/return, player 12 HP and death blocking, AI smoke tests.
+- **STEP 3 (feature branch, pending):** Q cone (3 damage, 5 MP, 1.3s cooldown); E bolt projectile (5 damage, 7 MP, 1.8s cooldown); mana regeneration; cooldown HUD.
 
-## STEP 1 (merged into main — PR #1)
+## Play STEP 3
 
-- Mouse **left click** performs a single short melee strike in the clicked direction.
-- Attack range **84 px**, forward arc **110°**, damage **2 HP**, cooldown **0.4 s**.
-- Three stationary pink/red training dummies (4 HP each); two hits defeat a dummy.
-- Each dummy has a health bar; HUD counts defeated targets.
-- Physical hit detection queries **Area2D** hurtboxes on collision layer 4.
-- Damage and death behavior isolated in a reusable **HealthComponent**.
+Switch to `feature/step3-skills-mana` branch and open `project.godot` in Godot 4.7.2 Standard.
 
-Controls: WASD/arrow keys = move, left click near a dummy = attack, Esc = exit. To respawn all targets, restart F5.
+- `WASD` / arrows: move
+- `Left click`: melee
+- `Q`: cone attack toward mouse pointer (126px, 100°)
+- `E`: single-hit bolt toward mouse pointer (360px/s, max 330px travel after muzzle offset)
+- `Esc`: exit
 
-Enemy AI, enemy attacks, equipment, item drops, save files and combat animations are **not implemented** in this step.
+The mana pool starts at 20 MP and regains 1 MP each second while alive. The HUD shows MP, HP and skill cooldown timers. Restart with F5 to reset.
 
-## Start in Godot (Windows)
+## Verification
 
-1. Download [Godot 4.7.2 Standard](https://godotengine.org/download/archive/4.7.2-stable/).
-2. Git checkout `feature/step1-basic-combat` (or review the pull request), open `project.godot` from the repository root.
-3. Press **F5** and move near one of the red targets.
-4. Point at the target and left-click; the translucent yellow wedge indicates the attack arc.
-5. Hit twice with at least 0.4 seconds between strikes. Verify the target disappears and the HUD count increments.
-6. Verify basic WASD movement and map edges still work.
-
-## Verify (no paid dependencies)
-
-Windows PowerShell (replace the Godot executable path):
+On Windows PowerShell, from the project root:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\verify.ps1 -Godot "C:\Tools\Godot_v4.7.2-stable_win64.exe"
 ```
 
-Linux / GitHub Actions:
+On Linux:
 
 ```bash
-GODOT_BIN=/path/to/godot bash tools/verify.sh
+GODOT_BIN=/path/to/Godot bash tools/verify.sh
 ```
 
-Verification includes Python structural checks, Godot headless asset import, preserved STEP 0 smoke, and STEP 1 combat smoke. **STEP 2 is a separate feature branch and still requires green CI, manual gameplay verification, and explicit approval before merging to main.**
+The GitHub Actions workflow runs Python structure tests, headless import, STEP0 map, STEP1 combat, STEP2 AI, and STEP3 skill runtime checks on every push and PR.
 
-## Workflow
+## Scope and review
 
-Use one isolated `feature/step*-*` branch per task, open a pull request to `main`, and merge only after review and testing. See [STEP 1 acceptance](docs/tasks/STEP1_ACCEPTANCE.md) and [AI task rules](docs/agents/AI_TASK_RULES.md). No automatic merging or writes to other repositories.
-
-
-## STEP 2 — Enemy AI (feature/step2-enemy-ai, pending PR)
-
-- Keeps the existing three stationary training targets and all STEP 1 combat controls.
-- Two orange enemies patrol no route but detect the player (215px), pursue by direct movement, telegraph a melee hit (0.28s), and deal 2 HP every 1.15s while in range (43px).
-- The player has 12 HP; a zero-health player cannot move or attack. Restart F5 to reset.
-- Chasers return to their home positions after exceeding 330px leash or player death. They have 8 HP each.
-- No wall-aware pathfinding, advanced navigation or animations yet. See `docs/tasks/STEP2_ACCEPTANCE.md` for acceptance and limits.
-- Verification: `tools/verify.sh` or `tools/verify.ps1` runs Python structure checks and three Godot smoke tests (STEP0/1/2).
+This is a deliberately small offline single-player test arena: original placeholder artwork, no animations, sounds, quests, item drops, inventory, wall-aware projectile collision or multiplayer. Do not merge the STEP 3 PR without both successful CI and user play-testing. See `docs/tasks/STEP3_ACCEPTANCE.md`.
