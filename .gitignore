@@ -1,0 +1,15 @@
+# Godot generated editor cache
+.godot/
+# Temporary exports and builds
+build/
+dist/
+exports/
+*.tmp
+# Python caches
+__pycache__/
+*.py[cod]
+# Editors
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
