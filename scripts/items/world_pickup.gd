@@ -5,6 +5,7 @@ extends Area2D
 signal collected(item_id: String)
 
 var item_id: String = ""
+var _collected: bool = false
 
 @onready var label: Label = $Label
 @onready var visual: Polygon2D = $Visual
@@ -39,7 +40,7 @@ func _on_body_entered(body: Node2D) -> void:
 
 
 func try_collect(body: Node2D) -> bool:
-    if not is_inside_tree() or not is_instance_valid(body):
+    if _collected or is_queued_for_deletion() or not is_inside_tree() or not is_instance_valid(body):
         return false
     var health: HealthComponent = body.get_node_or_null("HealthComponent") as HealthComponent
     var inventory: InventoryComponent = body.get_node_or_null("InventoryComponent") as InventoryComponent
@@ -47,7 +48,7 @@ func try_collect(body: Node2D) -> bool:
         return false
     if not inventory.add_item(item_id):
         return false
+    _collected = true
     collected.emit(item_id)
-    monitoring = false
     queue_free()
     return true
