@@ -8,7 +8,7 @@ A standalone **2D isometric action RPG prototype** using Godot 4.7.2 Standard + 
 - WASD or arrow-key movement, placeholder sprite, Camera2D follow.
 - Python and Godot headless smoke tests.
 
-## STEP 1 (feature branch — requires CI/play-test/PR approval)
+## STEP 1 (merged into main — PR #1)
 
 - Mouse **left click** performs a single short melee strike in the clicked direction.
 - Attack range **84 px**, forward arc **110°**, damage **2 HP**, cooldown **0.4 s**.
@@ -44,7 +44,7 @@ Linux / GitHub Actions:
 GODOT_BIN=/path/to/godot bash tools/verify.sh
 ```
 
-Verification includes Python structural checks, Godot headless asset import, preserved STEP 0 smoke, and STEP 1 combat smoke. **A green PR CI check and a user play-test are required before merging to main.**
+Verification includes Python structural checks, Godot headless asset import, preserved STEP 0 smoke, and STEP 1 combat smoke. **STEP 2 is a separate feature branch and still requires green CI, manual gameplay verification, and explicit approval before merging to main.**
 
 ## Workflow
 
