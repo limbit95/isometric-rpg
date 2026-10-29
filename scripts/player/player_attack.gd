@@ -64,6 +64,8 @@ func _perform_attack(aim: Vector2) -> void:
     query.collide_with_areas = true
     query.collide_with_bodies = false
 
+    var inventory: InventoryComponent = get_parent().get_node_or_null("InventoryComponent") as InventoryComponent
+    var total_damage: int = attack_damage + (inventory.get_attack_bonus() if inventory != null else 0)
     var hits: int = 0
     var hit_targets: Dictionary = {}
     var overlaps: Array[Dictionary] = get_world_2d().direct_space_state.intersect_shape(query, MAX_QUERY_RESULTS)
@@ -81,7 +83,7 @@ func _perform_attack(aim: Vector2) -> void:
         if not to_target.is_zero_approx() and to_target.normalized().dot(aim) < min_dot:
             continue
         hit_targets[target.get_instance_id()] = true
-        if bool(target.call("receive_damage", attack_damage)):
+        if bool(target.call("receive_damage", total_damage)):
             hits += 1
     attack_performed.emit(hits)
 
