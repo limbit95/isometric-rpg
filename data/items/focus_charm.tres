@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/items/item_data.gd" id="1_data"]
+
+[resource]
+script = ExtResource("1_data")
+item_id = "focus_charm"
+display_name = "Focus Charm"
+slot = "charm"
+max_stack = 1
+mana_bonus = 4

@@ -1,5 +1,5 @@
 extends Node2D
-## STEP 3 composition root: arena spawns and HUD. Combat/skills are separate components.
+## STEP 4 composition root: progression rewards, loot spawning and HUD.
 
 const INPUT_BINDINGS: Dictionary = {
     "move_left": [KEY_A, KEY_LEFT],
@@ -8,10 +8,13 @@ const INPUT_BINDINGS: Dictionary = {
     "move_down": [KEY_S, KEY_DOWN],
     "skill_cone": [KEY_Q],
     "skill_bolt": [KEY_E],
+    "equip_weapon": [KEY_1],
+    "equip_charm": [KEY_2],
 }
 const SPAWN_CELL: Vector2i = Vector2i(10, 10)
 const TRAINING_DUMMY_SCENE: PackedScene = preload("res://scenes/enemies/training_dummy.tscn")
 const CHASER_SCENE: PackedScene = preload("res://scenes/enemies/chaser_enemy.tscn")
+const PICKUP_SCENE: PackedScene = preload("res://scenes/items/world_pickup.tscn")
 const DUMMY_CELLS: Array[Vector2i] = [
     Vector2i(11, 10),
     Vector2i(14, 12),
@@ -30,10 +33,15 @@ var enemies_defeated: int = 0
 @onready var player_health: HealthComponent = $Player/HealthComponent
 @onready var player_mana: ManaComponent = $Player/ManaComponent
 @onready var player_skills: Node2D = $Player/Skills
+@onready var progression: ProgressionComponent = $Player/ProgressionComponent
+@onready var inventory: InventoryComponent = $Player/InventoryComponent
 @onready var status_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/Status
 @onready var player_health_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/PlayerHealth
 @onready var player_mana_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/PlayerMana
 @onready var skill_status_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/SkillStatus
+@onready var progression_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/Progression
+@onready var inventory_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/Inventory
+@onready var equipment_label: Label = $HUD/PanelContainer/MarginContainer/VBoxContainer/Equipment
 
 
 func _ready() -> void:
@@ -42,11 +50,17 @@ func _ready() -> void:
     player_health.health_changed.connect(_on_player_health_changed)
     player_health.died.connect(_on_player_died)
     player_mana.mana_changed.connect(_on_player_mana_changed)
+    progression.experience_changed.connect(_on_experience_changed)
+    inventory.inventory_changed.connect(_update_inventory_hud)
+    inventory.equipment_changed.connect(_on_equipment_changed)
     _spawn_training_targets()
     _spawn_chasers()
     _update_status()
     _on_player_health_changed(player_health.current_health, player_health.max_health)
     _on_player_mana_changed(player_mana.current_mana, player_mana.max_mana)
+    _on_experience_changed(progression.level, progression.experience, progression.required_experience())
+    _update_inventory_hud()
+    _on_equipment_changed()
 
     
 func _process(_delta: float) -> void:
@@ -58,7 +72,13 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_key_input(event: InputEvent) -> void:
-    if event.is_action_pressed("ui_cancel"):
+    if event.is_action_pressed("equip_weapon"):
+        if inventory.equip_item("training_blade"):
+            get_viewport().set_input_as_handled()
+    elif event.is_action_pressed("equip_charm"):
+        if inventory.equip_item("focus_charm"):
+            get_viewport().set_input_as_handled()
+    elif event.is_action_pressed("ui_cancel"):
         get_viewport().set_input_as_handled()
         get_tree().quit()
 
@@ -69,7 +89,7 @@ func _spawn_training_targets() -> void:
         dummy.name = "TrainingDummy%02d" % (index + 1)
         add_child(dummy)
         dummy.global_position = world.to_global(world.map_to_local(DUMMY_CELLS[index]))
-        dummy.connect("defeated", _on_target_defeated)
+        dummy.connect("defeated", _on_target_defeated.bind(dummy))
 
 
 func _spawn_chasers() -> void:
@@ -80,17 +100,29 @@ func _spawn_chasers() -> void:
         var spawn_point: Vector2 = world.to_global(world.map_to_local(CHASER_CELLS[index]))
         enemy.global_position = spawn_point
         enemy.call("set_home_position", spawn_point)
-        enemy.connect("defeated", _on_enemy_defeated)
+        enemy.connect("defeated", _on_enemy_defeated.bind(enemy))
 
 
-func _on_target_defeated() -> void:
+func _on_target_defeated(dummy: CharacterBody2D) -> void:
     targets_defeated += 1
+    _spawn_pickup("iron_shard", dummy.global_position)
     _update_status()
 
 
-func _on_enemy_defeated() -> void:
+func _on_enemy_defeated(enemy: CharacterBody2D) -> void:
     enemies_defeated += 1
+    if not player_health.is_dead():
+        progression.add_experience(5)
+    var drop_id: String = "training_blade" if enemy.name == "ChaserEnemy01" else "focus_charm"
+    _spawn_pickup(drop_id, enemy.global_position)
     _update_status()
+
+
+func _spawn_pickup(item_id: String, location: Vector2) -> void:
+    var pickup: WorldPickup = PICKUP_SCENE.instantiate() as WorldPickup
+    add_child(pickup)
+    pickup.global_position = location
+    pickup.configure(item_id)
 
 
 func _update_status() -> void:
@@ -109,6 +141,22 @@ func _on_player_died() -> void:
 
 func _on_player_mana_changed(current: int, maximum: int) -> void:
     player_mana_label.text = "Player MP: %d / %d  (+1/s)" % [current, maximum]
+
+
+func _on_experience_changed(level: int, experience: int, needed: int) -> void:
+    progression_label.text = "Level %d  |  XP %d / %d" % [level, experience, needed]
+
+
+func _update_inventory_hud() -> void:
+    inventory_label.text = "Bag: " + inventory.inventory_description()
+
+
+func _on_equipment_changed() -> void:
+    var blade: String = "Blade" if str(inventory.equipment["weapon"]) != "" else "-"
+    var charm: String = "Charm" if str(inventory.equipment["charm"]) != "" else "-"
+    equipment_label.text = "Equipped: %s / %s  |  1: Weapon, 2: Charm" % [blade, charm]
+    player_mana.max_mana = 20 + inventory.get_mana_bonus()
+    _on_player_mana_changed(player_mana.current_mana, player_mana.max_mana)
 
 
 func _register_move_inputs() -> void:
