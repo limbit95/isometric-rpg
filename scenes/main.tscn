@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene load_steps=10 format=3]
 
 [ext_resource type="Script" path="res://scripts/game/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/world/isometric_world.gd" id="2_world"]
@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" path="res://assets/characters/player_placeholder.png" id="4_texture"]
 [ext_resource type="Script" path="res://scripts/player/player_attack.gd" id="5_attack"]
 [ext_resource type="Script" path="res://scripts/components/health_component.gd" id="6_health"]
+[ext_resource type="Script" path="res://scripts/components/mana_component.gd" id="7_mana"]
+[ext_resource type="Script" path="res://scripts/player/player_skills.gd" id="8_skills"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_player"]
 radius = 7.0
@@ -37,6 +39,13 @@ script = ExtResource("5_attack")
 script = ExtResource("6_health")
 max_health = 12
 
+[node name="ManaComponent" type="Node" parent="Player"]
+script = ExtResource("7_mana")
+max_mana = 20
+
+[node name="Skills" type="Node2D" parent="Player"]
+script = ExtResource("8_skills")
+
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(1.75, 1.75)
 position_smoothing_enabled = true
@@ -48,7 +57,7 @@ position_smoothing_speed = 6.0
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 530.0
-offset_bottom = 132.0
+offset_bottom = 182.0
 
 [node name="MarginContainer" type="MarginContainer" parent="HUD/PanelContainer"]
 theme_override_constants/margin_left = 12
@@ -59,13 +68,19 @@ theme_override_constants/margin_bottom = 9
 [node name="VBoxContainer" type="VBoxContainer" parent="HUD/PanelContainer/MarginContainer"]
 
 [node name="Title" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
-text = "ISOMETRIC RPG  |  STEP 2"
+text = "ISOMETRIC RPG  |  STEP 3"
 
 [node name="Help" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
-text = "WASD / arrows: Move  |  Left click: Attack  |  Esc: Exit"
+text = "WASD: Move  |  LMB: Attack  |  Q: Cone  |  E: Bolt  |  Esc: Exit"
 
 [node name="Status" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
 text = "Dummies: 0 / 3 | Enemies: 0 / 2"
 
 [node name="PlayerHealth" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
 text = "Player HP: 12 / 12"
+
+[node name="PlayerMana" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
+text = "Player MP: 20 / 20"
+
+[node name="SkillStatus" type="Label" parent="HUD/PanelContainer/MarginContainer/VBoxContainer"]
+text = "Q Cone (5 MP): Ready  |  E Bolt (7 MP): Ready"
