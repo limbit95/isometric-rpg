@@ -87,6 +87,16 @@ func _run() -> void:
         _fail("Enemy attacked twice during cooldown")
         return
 
+    # Existing STEP 1 player melee must damage the new enemy hurtbox.
+    var melee: Node2D = player.get_node("Attack") as Node2D
+    if not bool(melee.call("queue_attack_at", enemy.global_position)):
+        _fail("Player attack was rejected against moving enemy")
+        return
+    await _tick(3)
+    if enemy_health.current_health != 6:
+        _fail("Player melee did not hit the new enemy for 2 damage")
+        return
+
     # Health death must block player input and enemy attacks.
     if not player_health.take_damage(10) or not player_health.is_dead():
         _fail("Player death state failed")
@@ -105,7 +115,7 @@ func _run() -> void:
         return
 
     # Enemy death is idempotent; defeat count is one.
-    if not bool(enemy.call("receive_damage", 8)):
+    if not bool(enemy.call("receive_damage", 6)):
         _fail("Enemy did not receive lethal damage")
         return
     await _tick(3)
