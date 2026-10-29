@@ -22,4 +22,7 @@ if ($LASTEXITCODE -ne 0) { throw "STEP2 AI smoke test failed ($LASTEXITCODE)" }
 & $Godot --headless --path $ProjectRoot --script res://tests/skills_smoke_runner.gd
 if ($LASTEXITCODE -ne 0) { throw "STEP3 skills smoke test failed ($LASTEXITCODE)" }
 
-Write-Host "STEP3_VERIFICATION_OK"
+& $Godot --headless --path $ProjectRoot --script res://tests/progression_inventory_smoke_runner.gd
+if ($LASTEXITCODE -ne 0) { throw "STEP4 progression and inventory smoke test failed ($LASTEXITCODE)" }
+
+Write-Host "STEP4_VERIFICATION_OK"
