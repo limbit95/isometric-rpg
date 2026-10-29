@@ -1,29 +1,38 @@
-# Isometric RPG — STEP 0
+# Isometric RPG — Godot 4.7.2
 
-A standalone **Godot 4.7.2**, **GDScript**, 2D isometric action RPG foundation.
-This repository is entirely separate from Unreal Engine and other projects.
+A standalone **2D isometric action RPG prototype** using Godot 4.7.2 Standard + typed GDScript. This is a new independent repository; no Unreal or other game repository is touched.
 
-## Current state (STEP 0)
+## STEP 0 (committed to main)
 
-- Godot `TileMapLayer` with a procedural `TileSetAtlasSource`, **64×32 isometric diamond tiles**, 20×20 test map.
-- A placeholder sprite, 4-way/8-way analogized keyboard movement (`WASD` / arrow keys), camera follow, floor-edge bounds checking.
-- Self-contained `main.tscn`; no external paid assets and no network dependency at runtime.
-- Python structural checks and Godot headless runtime smoke test.
-- GitHub Actions workflow for PR/push CI with a pinned Godot 4.7.2 binary.
+- 64×32 isometric TileMapLayer / 20×20 checkerboard arena.
+- WASD or arrow-key movement, placeholder sprite, Camera2D follow.
+- Python and Godot headless smoke tests.
 
-> This is **not yet a combat prototype**. Attacks, obstacles, gameplay physics, AI, save system, and exports belong to subsequent steps. The ground tileset is generated at startup; STEP 1 should convert to an editable artist-maintained TileSet.
+## STEP 1 (feature branch — requires CI/play-test/PR approval)
 
-## Open in Godot (Windows)
+- Mouse **left click** performs a single short melee strike in the clicked direction.
+- Attack range **84 px**, forward arc **110°**, damage **2 HP**, cooldown **0.4 s**.
+- Three stationary pink/red training dummies (4 HP each); two hits defeat a dummy.
+- Each dummy has a health bar; HUD counts defeated targets.
+- Physical hit detection queries **Area2D** hurtboxes on collision layer 4.
+- Damage and death behavior isolated in a reusable **HealthComponent**.
 
-1. Install **Godot Engine 4.7.2 Standard**, not .NET, from https://godotengine.org/download/archive/4.7.2-stable/ .
-2. Extract the project ZIP, keeping this `project.godot` at the project root.
-3. Open Godot Project Manager → **Import** → choose `project.godot` → **Import & Edit**.
-4. Press **F6** from `scenes/main.tscn` or **F5** to play the project.
-5. Move with `WASD` / arrow keys; `Esc` quits. The placeholder player should remain on the isometric floor.
+Controls: WASD/arrow keys = move, left click near a dummy = attack, Esc = exit. To respawn all targets, restart F5.
 
-## Run verification
+Enemy AI, enemy attacks, equipment, item drops, save files and combat animations are **not implemented** in this step.
 
-Windows PowerShell (replace the quoted path to the Godot executable):
+## Start in Godot (Windows)
+
+1. Download [Godot 4.7.2 Standard](https://godotengine.org/download/archive/4.7.2-stable/).
+2. Git checkout `feature/step1-basic-combat` (or review the pull request), open `project.godot` from the repository root.
+3. Press **F5** and move near one of the red targets.
+4. Point at the target and left-click; the translucent yellow wedge indicates the attack arc.
+5. Hit twice with at least 0.4 seconds between strikes. Verify the target disappears and the HUD count increments.
+6. Verify basic WASD movement and map edges still work.
+
+## Verify (no paid dependencies)
+
+Windows PowerShell (replace the Godot executable path):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\tools\verify.ps1 -Godot "C:\Tools\Godot_v4.7.2-stable_win64.exe"
@@ -35,51 +44,8 @@ Linux / GitHub Actions:
 GODOT_BIN=/path/to/godot bash tools/verify.sh
 ```
 
-Checks:
-1. Python contract tests (requires Python 3 only; no third-party packages).
-2. Godot headless import and scene/script parsing.
-3. Godot headless `tests/smoke_runner.gd`: validates isometric shape, 64×32 tiles, 400 cells, spawn and input actions.
+Verification includes Python structural checks, Godot headless asset import, preserved STEP 0 smoke, and STEP 1 combat smoke. **A green PR CI check and a user play-test are required before merging to main.**
 
-**Note:** Godot scripts still need runtime confirmation with Godot 4.7.2. A successful static Python test is not a successful Godot engine run.
+## Workflow
 
-## Create a separate GitHub repository
-
-Create a **new private empty repository** named `isometric-rpg-step0` under your GitHub account. Do **not** choose automatic README or `.gitignore` creation. In the extracted project directory:
-
-```bash
-git init -b main
-git add .
-git commit -m "chore: bootstrap Godot 4.7.2 STEP0"
-git remote add origin https://github.com/limbit95/isometric-rpg-step0.git
-git push -u origin main
-```
-
-The remote URL above works **only after you create the new repository**. This package does not change any existing repository. Enable GitHub Actions if prompted and inspect the `Godot STEP0 verification` workflow result.
-
-For future steps, create `feature/step1-combat` from `main`, open a PR, wait for the CI check, then manually approve and merge. See `docs/agents/AI_TASK_RULES.md`.
-
-## Scope and non-goals
-
-- Offline single-player first. No authentication, database, multiplayer, telemetry, or Supabase.
-- Only sample pixel graphics made for this prototype. Replace with rights-cleared sprites later.
-- No pre-existing Unreal or GitHub project was modified.
-- A release executable is not generated in STEP 0; export presets/templates will be introduced when packaging is part of the scope.
-
-## Directory layout
-
-```text
-assets/characters/       Placeholder player image
-assets/tiles/            Placeholder 2-tile isometric atlas
-scenes/                  Instantiable main scene
-scripts/game/            Composition/input binding
-scripts/world/           Runtime isometric tilemap
-scripts/player/          CharacterBody2D movement
-tests/                   Python and Godot smoke tests
-tools/                   Windows and Linux validation scripts
-data/                    Future content (items, enemies, skills, quests)
-docs/architecture/       Architecture decisions
-docs/agents/             AI implementation constraints
-docs/story/              Story input contract
-docs/tasks/              Acceptance criteria
-.github/workflows/       Remote verification
-```
+Use one isolated `feature/step*-*` branch per task, open a pull request to `main`, and merge only after review and testing. See [STEP 1 acceptance](docs/tasks/STEP1_ACCEPTANCE.md) and [AI task rules](docs/agents/AI_TASK_RULES.md). No automatic merging or writes to other repositories.
