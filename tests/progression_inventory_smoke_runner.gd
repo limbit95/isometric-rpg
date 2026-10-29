@@ -53,10 +53,9 @@ func _run() -> void:
     if shard == null or progress.experience != 0:
         _fail("Dummy material drop / XP policy incorrect")
         return
-    if not shard.try_collect(player):
-        _fail("Material pickup could not be collected")
-        return
-    await _tick(2)
+    # Real physics body_entered must collect loot when player walks across it.
+    player.global_position = shard.global_position
+    await _tick(5)
     if inventory.count_item("iron_shard") != 1 or _get_pickup(game, "iron_shard") != null:
         _fail("Collected material missing or still in world")
         return
