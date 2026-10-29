@@ -26,6 +26,9 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func queue_attack_at(world_point: Vector2) -> bool:
+    var player_health: HealthComponent = get_parent().get_node_or_null("HealthComponent") as HealthComponent
+    if player_health != null and player_health.is_dead():
+        return false
     if _remaining_cooldown > 0.0 or not _queued_direction.is_zero_approx():
         return false
     var aim: Vector2 = world_point - global_position
