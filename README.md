@@ -40,3 +40,15 @@ The GitHub Actions workflow runs Python structure tests, headless import, STEP0 
 ## Scope and review
 
 This is a deliberately small offline single-player test arena: original placeholder artwork, no animations, sounds, quests, item drops, inventory, wall-aware projectile collision or multiplayer. Do not merge the STEP 3 PR without both successful CI and user play-testing. See `docs/tasks/STEP3_ACCEPTANCE.md`.
+
+
+## STEP 4 (feature branch, not yet merged)
+
+- Chasers give 5 XP each; 10 XP advances from level 1 to 2, then 15 XP for the next level.
+- Dummies drop yellow Iron Shards; first chaser drops blue Training Blade, second drops purple Focus Charm.
+- Walk onto colored diamonds to collect into the 8-slot bag; shard stacks up to 20, equipment is nonstackable.
+- Press `1` after collecting blade to equip +1 basic attack; `2` after collecting charm to equip +4 max MP.
+- HUD displays level and XP, bag contents, equipped items, mana and existing skills.
+- Progression and bag reset on F5; **no save file yet**.
+- Detailed acceptance checklist: `docs/tasks/STEP4_ACCEPTANCE.md`.
+- Verification now includes the STEP 4 smoke in addition to STEP 0–3 checks.
